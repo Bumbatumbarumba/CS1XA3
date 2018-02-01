@@ -1,0 +1,110 @@
+var _MacCASOutreach$graphicsvg$Main$myUpdate = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		return model;
+	});
+var _MacCASOutreach$graphicsvg$Main$gridplz = _MacCASOutreach$graphicsvg$GraphicSVG$graphPaper(10);
+var _MacCASOutreach$graphicsvg$Main$whyElm = A2(
+	_MacCASOutreach$graphicsvg$GraphicSVG$filled,
+	_MacCASOutreach$graphicsvg$GraphicSVG$black,
+	A2(
+		_MacCASOutreach$graphicsvg$GraphicSVG$size,
+		14,
+		_MacCASOutreach$graphicsvg$GraphicSVG$bold(
+			_MacCASOutreach$graphicsvg$GraphicSVG$fixedwidth(
+				_MacCASOutreach$graphicsvg$GraphicSVG$text('why does this language do the things it does')))));
+var _MacCASOutreach$graphicsvg$Main$getRow = F2(
+	function (model, i) {
+		return A2(_elm_lang$core$Array$get, i, model.grid);
+	});
+var _MacCASOutreach$graphicsvg$Main$cellShape = function (pos) {
+	return A2(
+		_MacCASOutreach$graphicsvg$GraphicSVG$move,
+		pos,
+		A2(
+			_MacCASOutreach$graphicsvg$GraphicSVG$filled,
+			_MacCASOutreach$graphicsvg$GraphicSVG$black,
+			_MacCASOutreach$graphicsvg$GraphicSVG$square(10)));
+};
+var _MacCASOutreach$graphicsvg$Main$myView = function (model) {
+	return A3(
+		_MacCASOutreach$graphicsvg$GraphicSVG$collage,
+		300,
+		300,
+		{
+			ctor: '::',
+			_0: _MacCASOutreach$graphicsvg$GraphicSVG$group(
+				A2(_elm_lang$core$List$map, _MacCASOutreach$graphicsvg$Main$cellShape, model.grid)),
+			_1: {ctor: '[]'}
+		});
+};
+var _MacCASOutreach$graphicsvg$Main$cell = {alive: 0, draw: _MacCASOutreach$graphicsvg$Main$cellShape};
+var _MacCASOutreach$graphicsvg$Main$getColumn = F3(
+	function (outer, model, j) {
+		var _p1 = outer;
+		if (_p1.ctor === 'Just') {
+			return A2(_elm_lang$core$Array$get, j, _p1._0);
+		} else {
+			return _elm_lang$core$Maybe$Just(_MacCASOutreach$graphicsvg$Main$cell);
+		}
+	});
+var _MacCASOutreach$graphicsvg$Main$getCell = F3(
+	function (model, i, j) {
+		return A3(
+			_MacCASOutreach$graphicsvg$Main$getColumn,
+			A2(_MacCASOutreach$graphicsvg$Main$getRow, model, i),
+			model,
+			j);
+	});
+var _MacCASOutreach$graphicsvg$Main$myModel = {
+	t: 0,
+	grid: {
+		ctor: '::',
+		_0: {ctor: '_Tuple2', _0: -50, _1: 0},
+		_1: {
+			ctor: '::',
+			_0: {ctor: '_Tuple2', _0: -40, _1: 0},
+			_1: {
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: -30, _1: 0},
+				_1: {
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: -20, _1: 0},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: -10, _1: 0},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 0, _1: 0},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 10, _1: 0},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 20, _1: 0},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 30, _1: 0},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 40, _1: 0},
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+};
+var _MacCASOutreach$graphicsvg$Main$Tick = F2(
+	function (a, b) {
+		return {ctor: 'Tick', _0: a, _1: b};
+	});
+var _MacCASOutreach$graphicsvg$Main$main = A2(
+	_MacCASOutreach$graphicsvg$GraphicSVG$gameApp,
+	_MacCASOutreach$graphicsvg$Main$Tick,
+	{model: _MacCASOutreach$graphicsvg$Main$myModel, view: _MacCASOutreach$graphicsvg$Main$myView, update: _MacCASOutreach$graphicsvg$Main$myUpdate})();
