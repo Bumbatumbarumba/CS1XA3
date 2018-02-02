@@ -2,20 +2,19 @@
 * 01/02/2018 (dd/mm/yyyy)
 * Coway's Game of Life in Java
 */
-import java.util.Random;
-
 public class ConwaysGame{
-	public static int rows = 300;
-	public static int columns = 300;
+	public static int rows = 100;
+	public static int columns = 100;
 	public static Cell[][] grid = new Cell[rows][columns];
-	public static Random rand = new Random();
+
 	//change this to be a double between 0 and 1 to determine how many live
 	//members there will be off the bat when populate() is ran
-	public static double liveInit = 0.05;
+	public static double livingLikelihood = 0.05;
 
 	public static void main (String [] args){
 		populate();
 		System.out.println(countLive());
+		GridGui.drawGrid();
 	}
 
 	//randomly populates the grid with live cells
@@ -23,7 +22,7 @@ public class ConwaysGame{
 		for (int i = 0; i < rows; i++){
 			for (int j = 0; j < columns; j++){
 				grid[i][j] = new Cell();
-				if (Math.random() < 0.05){
+				if (Math.random() < livingLikelihood){
 					grid[i][j].makeAlive();
 				}
 			}
