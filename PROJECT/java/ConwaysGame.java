@@ -30,9 +30,16 @@ public class ConwaysGame {
 		}
 		// game starts when runGame is true, duh
 		while (runGame) {
-			// put stuff here to make the game run
-			for (int i = 0; i < 20; i++) {
-				System.out.println("test");
+			//iterates through the grid and 
+			for (int i = 0; i < rows; i++){
+				for (int j = 0; j < columns; j++){
+					if (ruleCheck(i, j)){
+						grid[i][j].makeAlive();
+					}
+					else {
+						grid[i][j].makeDead();
+					}
+				}
 			}
 		}
 	}
@@ -41,7 +48,7 @@ public class ConwaysGame {
 	public static void populate() {
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
-				grid[i][j] = new Cell();
+				grid[i][j] = new Cell(i, j);
 				if (Math.random() < livingLikelihood) {
 					grid[i][j].makeAlive();
 				}
@@ -65,10 +72,36 @@ public class ConwaysGame {
 	// used to check if the current space should be alive or dead, based on the
 	// rules on the wiki page of conway's game; they are listed below
 	public static boolean ruleCheck(int i, int j) {
+		//used to add up the number of live neighbours
 		int neighbourCounter = 0;
+		//used to return if the current cell will be alive or not
 		boolean willSurvive = false;
+		
+		//this first block counts up the number of alive neighbours
 		if (i > 0) {
-			if (j > 0) {
+			if (i < rows-1){
+				if (j > 0) {
+					if (j < columns-1){
+						//this checks all of the spots that are within the edges
+						//figure out if there's a better way to do this
+						if (grid[i-1][j-1].isLive())
+							neighbourCounter++;
+						if (grid[i][j-1].isLive())
+							neighbourCounter++;
+						if (grid[i+1][j-1].isLive())
+							neighbourCounter++;
+						if (grid[i-1][j].isLive())
+							neighbourCounter++;
+						if (grid[i+1][j].isLive())
+							neighbourCounter++;
+						if (grid[i-1][j+1].isLive())
+							neighbourCounter++;
+						if (grid[i][j+1].isLive())
+							neighbourCounter++;
+						if (grid[i+1][j+1].isLive())
+							neighbourCounter++;
+					}
+				}	
 			}
 		}
 
@@ -113,7 +146,12 @@ class Cell {
 	private int x = 0;
 	private int y = 0;
 	private boolean islive = false;
-
+	
+	public Cell(int i, int j){
+		this.x = i;
+		this.y = j;
+		this.islive = false;
+	}
 	public boolean isLive() {
 		return this.islive;
 	}
