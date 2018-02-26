@@ -1,5 +1,4 @@
 import java.awt.Color;
-
 import javax.swing.JPanel;
 
 /*Created by Bartosz Kosakowski
@@ -7,8 +6,8 @@ import javax.swing.JPanel;
 * Coway's Game of Life in Java
 */
 public class ConwaysGame {
-	private static int rows = 100;
-	private static int columns = 100;
+	private static int rows = 20;
+	private static int columns = 20;
 	private static Cell[][] grid = new Cell[rows][columns];
 	private static boolean runGame = false;
 
@@ -18,7 +17,7 @@ public class ConwaysGame {
 
 	public static void main(String[] args) {
 		populate();
-		GridGui.drawGrid(rows, columns);
+		GridGui.drawGrid(grid, rows, columns);
 		runGame();
 	}
 
@@ -52,7 +51,7 @@ public class ConwaysGame {
 	public static void populate() {
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
-				grid[i][j] = new Cell(i, j);
+				grid[i][j] = new Cell();
 				if (Math.random() < livingLikelihood) {
 					grid[i][j].makeAlive();
 				}
@@ -145,23 +144,8 @@ public class ConwaysGame {
 // represents a cell, with vars for position, colour and
 // whether it is alive or not
 class Cell extends JPanel{
-	private int x;
-	private int y;
 	private Color cellColour = Color.WHITE;
 	private boolean islive = false;
-
-	public Cell(int i, int j) {
-		this.x = i;
-		this.y = j;
-	}
-
-	public int getX() {
-		return this.x;
-	}
-
-	public int getY() {
-		return this.y;
-	}
 
 	public boolean isLive() {
 		return this.islive;
