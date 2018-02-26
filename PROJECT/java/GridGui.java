@@ -1,21 +1,17 @@
-import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 /*Created by Bartosz Kosakowski
 * 02/02/2018 (dd/mm/yyyy)
 * Draws the grid used to display Conway's Game of Life
 */
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
 @SuppressWarnings("serial")
 public class GridGui extends JPanel {
-	
-	private static GridGui gridgui = new GridGui();
 
 	private static JButton startButton = new JButton("Start");
 	private static StartGame startAction = new StartGame();
@@ -23,10 +19,9 @@ public class GridGui extends JPanel {
 	private static EndGame endAction = new EndGame();
 
 	private static JFrame myFrame = new JFrame();
-
-	private static Grid[][] myGrid;
-	// private static Grid g = new Grid();
-
+	
+	private static Grid g1;
+	
 	// adds the buttons to the frame and positions them
 	private static void setUpButtons() {
 		startButton.addActionListener(startAction);
@@ -37,19 +32,7 @@ public class GridGui extends JPanel {
 		myFrame.add(endButton);
 	}// end of setUpButtons
 	
-	//instantiates the 
-	private static void setUpGrid(int rows, int columns) {
-		myGrid = new Grid[rows][columns];
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < columns; j++) {
-				myGrid[i][j] = new Grid(i, j);
-				myFrame.add(myGrid[i][j]);
-			}
-		}
-	}// end of setUpGrid
-
-	public static void drawGrid(int rows, int columns) {
-
+	public static void drawGrid(Cell[][] cells, int rows, int columns) {
 		// myFrame.setLayout(new FlowLayout());
 		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		myFrame.setSize(750, 750);
@@ -60,12 +43,9 @@ public class GridGui extends JPanel {
 		setUpButtons();
 
 		// we add the grid to the window after setting up the buttons
-		//setUpGrid(rows, columns);
+		g1 = new Grid(cells, rows, columns);
+		myFrame.add(g1);
 	}// end of drawGrid
-
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-	}// end of paintComponent
 }// end of GridGui
 
 class StartGame implements ActionListener {
@@ -83,19 +63,27 @@ class EndGame implements ActionListener {
 	}
 }// end of EndGame
 
+
+//testing stuff with drawing JPanel shapes
 @SuppressWarnings("serial")
 class Grid extends JPanel {
-	private int i;
-	private int j;
+	private int rows;
+	private int columns;
+	private Cell[][] cells;
 	
-	public Grid(int i, int j){
-		this.i = i;
-		this.j = j;
+	public Grid(Cell[][] cells, int rows, int columns){
+		this.cells = cells;
+		this.rows = rows;
+		this.columns = columns;
 	}
 	
 	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		g.setColor(Color.WHITE);
-		g.fillRect(20, 20, 5, 5);
+		for (int i = 0; i < rows; i++){
+			for (int j = 0; j < columns; j++){
+				g.setColor(this.cells[i][j].getColor());
+				g.fillRect(i*5, j*5, 5, 5);
+				System.out.println("cell location: ("+ i + ", " + j + ")\n" + "cell colour: " + cells[i][j].getColor());
+			}
+		}
 	}
 }// end of Grid
