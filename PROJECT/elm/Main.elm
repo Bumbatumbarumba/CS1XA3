@@ -29,7 +29,6 @@ cellShape pos = square 10
             |> filled black
             |> move pos
 
-
 getCell model i j =
     getColumn (getRow model i) model j
 getRow model i =
