@@ -1,3 +1,7 @@
+import java.awt.Color;
+
+import javax.swing.JPanel;
+
 /*Created by Bartosz Kosakowski
 * 01/02/2018 (dd/mm/yyyy)
 * Coway's Game of Life in Java
@@ -14,7 +18,7 @@ public class ConwaysGame {
 
 	public static void main(String[] args) {
 		populate();
-		GridGui.drawGrid();
+		GridGui.drawGrid(rows, columns);
 		runGame();
 	}
 
@@ -25,24 +29,24 @@ public class ConwaysGame {
 			try {
 				Thread.sleep(200);
 			} catch (InterruptedException e) {
-				//exception caught!
+				// exception caught!
 			}
 		}
+
 		// game starts when runGame is true, duh
 		while (runGame) {
-			//iterates through the grid and 
-			for (int i = 0; i < rows; i++){
-				for (int j = 0; j < columns; j++){
-					if (ruleCheck(i, j)){
+			// iterates through the grid and
+			for (int i = 0; i < rows; i++) {
+				for (int j = 0; j < columns; j++) {
+					if (ruleCheck(i, j)) {
 						grid[i][j].makeAlive();
-					}
-					else {
+					} else {
 						grid[i][j].makeDead();
 					}
 				}
 			}
 		}
-	}
+	}// end of runGame
 
 	// randomly populates the grid with live cells
 	public static void populate() {
@@ -57,6 +61,7 @@ public class ConwaysGame {
 	}// end of populate
 
 	// used to count the number of live cells at any given instance
+	// not useful outside of just checking stuff
 	public static int countLive() {
 		int numLiveCells = 0;
 		for (int i = 0; i < rows; i++) {
@@ -72,38 +77,34 @@ public class ConwaysGame {
 	// used to check if the current space should be alive or dead, based on the
 	// rules on the wiki page of conway's game; they are listed below
 	public static boolean ruleCheck(int i, int j) {
-		//used to add up the number of live neighbours
+		// used to add up the number of live neighbours
 		int neighbourCounter = 0;
-		//used to return if the current cell will be alive or not
+		// used to return if the current cell will be alive or not
 		boolean willSurvive = false;
-		
-		//this first block counts up the number of alive neighbours
-		if (i > 0) {
-			if (i < rows-1){
-				if (j > 0) {
-					if (j < columns-1){
-						//this checks all of the spots that are within the edges
-						//figure out if there's a better way to do this
-						if (grid[i-1][j-1].isLive())
-							neighbourCounter++;
-						if (grid[i][j-1].isLive())
-							neighbourCounter++;
-						if (grid[i+1][j-1].isLive())
-							neighbourCounter++;
-						if (grid[i-1][j].isLive())
-							neighbourCounter++;
-						if (grid[i+1][j].isLive())
-							neighbourCounter++;
-						if (grid[i-1][j+1].isLive())
-							neighbourCounter++;
-						if (grid[i][j+1].isLive())
-							neighbourCounter++;
-						if (grid[i+1][j+1].isLive())
-							neighbourCounter++;
-					}
-				}	
-			}
-		}
+
+		/*
+		 * this first block counts up the number of alive neighbours it checks
+		 * all neighbours surrounding the cell at (i,j) the beauty of using
+		 * modulo is that it can simulate an area that is circular, which makes
+		 * checking spaces VERY easy since for i == 0 and j == 0, if we check
+		 * (i-1)%100 we will actually check the space at i == 99 j == 0
+		 */
+		if (grid[Math.floorMod((i - 1), rows)][Math.floorMod((j - 1), columns)].isLive())
+			neighbourCounter++;
+		if (grid[Math.floorMod(i, rows)][Math.floorMod((j - 1), columns)].isLive())
+			neighbourCounter++;
+		if (grid[Math.floorMod((i + 1), rows)][Math.floorMod((j - 1), columns)].isLive())
+			neighbourCounter++;
+		if (grid[Math.floorMod((i - 1), rows)][Math.floorMod(j, columns)].isLive())
+			neighbourCounter++;
+		if (grid[Math.floorMod((i + 1), rows)][Math.floorMod(j, columns)].isLive())
+			neighbourCounter++;
+		if (grid[Math.floorMod((i - 1), rows)][Math.floorMod((j + 1), columns)].isLive())
+			neighbourCounter++;
+		if (grid[Math.floorMod(i, rows)][Math.floorMod((j + 1), columns)].isLive())
+			neighbourCounter++;
+		if (grid[Math.floorMod((i + 1), rows)][Math.floorMod((j + 1), columns)].isLive())
+			neighbourCounter++;
 
 		// any cell with fewer than two live neighbours dies, as
 		// if caused by underpopulation
@@ -140,27 +141,43 @@ public class ConwaysGame {
 	}
 }// end of ConwaysGame
 
-// represents a cell, with vars for position and whether it is alive or not
-// I will prolly remove the position vars
-class Cell {
-	private int x = 0;
-	private int y = 0;
+@SuppressWarnings("serial")
+// represents a cell, with vars for position, colour and
+// whether it is alive or not
+class Cell extends JPanel{
+	private int x;
+	private int y;
+	private Color cellColour = Color.WHITE;
 	private boolean islive = false;
-	
-	public Cell(int i, int j){
+
+	public Cell(int i, int j) {
 		this.x = i;
 		this.y = j;
-		this.islive = false;
 	}
+
+	public int getX() {
+		return this.x;
+	}
+
+	public int getY() {
+		return this.y;
+	}
+
 	public boolean isLive() {
 		return this.islive;
 	}
 
 	public void makeDead() {
 		this.islive = false;
+		this.cellColour = Color.WHITE;
 	}
 
 	public void makeAlive() {
 		this.islive = true;
+		this.cellColour = Color.BLACK;
 	}
-}//end of Cell
+
+	public Color getColor() {
+		return this.cellColour;
+	}
+}// end of Cell
