@@ -18,16 +18,16 @@ public class ConwaysGame {
 
 	// change this to be a double between 0 and 1 to determine how many live
 	// the odds of a cell starting off as alive or dead - default is 0.05
-	public static double livingLikelihood = 0.05;
+	public static double livingLikelihood = 0.99;
 
 	public static void main(String[] args) throws InterruptedException {
 		setUpRNG();
 
 		// comment and uncomment each of the following to use
 		// different seeds:
-		populate();
+		// populate();
 		// populateSquare();
-		// randSquarePop();
+		randSquarePop();
 		// doNotPop();
 
 		GridGui.drawUI(grid, rows, columns);
@@ -47,8 +47,7 @@ public class ConwaysGame {
 				Thread.sleep(100);
 
 				// iterates through the grid randomly (does not pick duplicate
-				// locations)
-				// rather than linearly
+				// locations) rather than linearly
 				for (int i = 0; i < rows; i++) {
 					for (int j = 0; j < columns; j++) {
 						if (ruleCheck(randRows[i], randCols[j])) {
@@ -59,7 +58,8 @@ public class ConwaysGame {
 					}
 				}
 
-				// checks each space linearly
+				// checks each space linearly; uncomment this code and comment
+				// out the above code to change how it runs
 				/*
 				 * for (int i = 0; i < rows; i++) { for (int j = 0; j < columns;
 				 * j++) { if (ruleCheck(i, j)) { grid[i][j].makeAlive(); } else
@@ -229,8 +229,8 @@ public class ConwaysGame {
 		populationSeedType = val;
 	}// end of setPopType
 
-	public static void decisionMade() {
-		makingPopChoice = false;
+	public static void decisionMade(boolean choice) {
+		makingPopChoice = choice;
 	}// end of setPopType
 }// end of ConwaysGame
 
