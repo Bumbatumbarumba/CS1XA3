@@ -12,63 +12,73 @@ import javax.swing.JPanel;
 */
 @SuppressWarnings("serial")
 public class GridGui extends JPanel {
-
+	
+	//all buttons required to implement desired features
 	private static JButton startButton = new JButton("Start");
-	private static StartGame startAction = new StartGame();
-	private static JButton endButton = new JButton("Pause");
-	private static EndGame endAction = new EndGame();
+	private static JButton pauseButton = new JButton("Pause");
 	private static JButton randPop = new JButton("Randomly Populate");
 	private static JButton squarePop = new JButton("Centered Square Population");
 	private static JButton randSquare = new JButton("Random Square Populations");
 	private static JButton noPop = new JButton("Empty Grid");
+	private static JButton stopSim = new JButton("Stop");
+	
+	//create a JFrame object and a Grid object used to hold the UI and grid of cells
 	private static JFrame myFrame = new JFrame();
-	private static Grid g1;
+	private static Grid grid;
 
 	// adds the buttons to the frame and positions them
 	private static void setUpButtons() {
-		startButton.addActionListener(startAction);
-		startButton.setBounds(275, 600, 100, 30);
+		startButton.addActionListener(new StartSim());
+		startButton.setBounds(175, 600, 100, 30);
+		startButton.setEnabled(false);
 
-		endButton.addActionListener(endAction);
-		endButton.setBounds(275, 600, 100, 30); // 400, 600, 100, 30
-		endButton.setVisible(false);
+		pauseButton.addActionListener(new PauseSim());
+		pauseButton.setBounds(175, 600, 100, 30); // 400, 600, 100, 30
+		pauseButton.setVisible(false);
+		pauseButton.setEnabled(false);
 		
 		randPop.addActionListener(new RandomPop());
-		randPop.setBounds(560, 200, 150, 30);
+		randPop.setBounds(560, 200, 200, 30);
 		
 		squarePop.addActionListener(new SquarePop());
-		squarePop.setBounds(560, 250, 150, 30);
+		squarePop.setBounds(560, 250, 200, 30);
 		
 		randSquare.addActionListener(new RandSquarePop());
-		randSquare.setBounds(560, 300, 150, 30);
+		randSquare.setBounds(560, 300, 200, 30);
 		
 		noPop.addActionListener(new NoPop());
-		noPop.setBounds(560, 350, 150, 30);
+		noPop.setBounds(560, 350, 200, 30);
 		
-		/*startButton.addActionListener(startAction);
-		startButton.setBounds(275, 600, 100, 30);*/
+		stopSim.addActionListener(new StopSim());
+		stopSim.setBounds(300, 600, 100, 30);
 		
 		myFrame.add(startButton);
-		myFrame.add(endButton);
+		myFrame.add(pauseButton);
 		myFrame.add(randPop);
 		myFrame.add(squarePop);
 		myFrame.add(randSquare);
 		myFrame.add(noPop);
+		myFrame.add(stopSim);
 	}// end of setUpButtons
-
-	public static void drawUI(Cell[][] cells, int rows, int columns) {
+	
+	//draws the UI
+	public static void drawUI() {
 		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		myFrame.setSize(750, 750);
+		myFrame.setSize(850, 750);
 		myFrame.setVisible(true);
 		myFrame.setTitle("Conway's Game of Life");
-		g1 = new Grid(cells, rows, columns);
-
+		
 		// we add the buttons in after configuring our window
 		setUpButtons();
-
-		// we add the grid to the window after setting up the buttons
-		myFrame.add(g1);
 	}// end of drawUI
+	
+	//graws the grid onto the frame
+	public static void drawGrid(Cell[][] cells, int rows, int columns){
+		//creates a grid that will contain our cells
+		grid = new Grid(cells, rows, columns);
+		// we add the grid to the window after setting up the buttons
+		myFrame.add(grid);
+	}
 
 	// updates the grid based on current cell statuses
 	public static void updateGrid() {
@@ -77,8 +87,10 @@ public class GridGui extends JPanel {
 	
 	public static void startVisibility(boolean isvis){
 		startButton.setVisible(isvis);
-		endButton.setVisible(!isvis);
-	}
+		startButton.setEnabled(isvis);
+		pauseButton.setVisible(!isvis);
+		pauseButton.setEnabled(!isvis);
+	}//end of startVisibility
 	
 	public static void controlVisibility(boolean setVis){
 		randPop.setVisible(setVis);
@@ -90,70 +102,86 @@ public class GridGui extends JPanel {
 		squarePop.setEnabled(setVis);
 		randSquare.setEnabled(setVis);
 		noPop.setEnabled(setVis);
+	}//end of controlVisibility
+	
+	public static void disableStart(){
+		startButton.setEnabled(false);
 	}
 }// end of GridGui
 
 // The following actionlistener classes allow for each button to
 // perform a particular function
-class StartGame implements ActionListener {
+class StartSim implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		GridGui.startVisibility(false);
 		GridGui.controlVisibility(false);
-		System.out.println("START");
 		ConwaysGame.startGame();
+		ConwaysGame.pauseUnpause(false);
+		System.out.println("START");
 	}
-}// end of StartGame
+}// end of StartSim
 
-class EndGame implements ActionListener {
+class PauseSim implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		GridGui.startVisibility(true);
 		GridGui.controlVisibility(true);
-		System.out.println("DONE");
-		ConwaysGame.endGame();
+		GridGui.updateGrid();
+		ConwaysGame.pauseUnpause(true);
+		System.out.println("PAUSED");
 	}
-}// end of EndGame
+}// end of PauseSim
 
 class RandomPop implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		System.out.println("selected random pop");
+		GridGui.startVisibility(true);
 		ConwaysGame.setPopType(0);
-		ConwaysGame.decisionMade(false);
-		GridGui.updateGrid();
+		ConwaysGame.decisionMade();
 	}
 }// end of RandomPop
 
 class SquarePop implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		System.out.println("selected square pop");
+		GridGui.startVisibility(true);
 		ConwaysGame.setPopType(1);
-		ConwaysGame.decisionMade(false);
+		ConwaysGame.decisionMade();
 	}
 }// end of SquarePop
 
 class RandSquarePop implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		System.out.println("selected random square pop");
+		GridGui.startVisibility(true);
 		ConwaysGame.setPopType(2);
-		ConwaysGame.decisionMade(false);
+		ConwaysGame.decisionMade();
 	}
 }// end of RandSquarePop
 
 class NoPop implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		System.out.println("selected no pop");
+		GridGui.startVisibility(true);
 		ConwaysGame.setPopType(3);
-		ConwaysGame.decisionMade(false);
+		ConwaysGame.decisionMade();
 	}
 }// end of NoPop
 
-class ResetGame implements ActionListener {
+class StopSim implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		ConwaysGame.endGame();
+		GridGui.startVisibility(true);
+		GridGui.controlVisibility(true);
+		GridGui.disableStart();
 	}
-}// end of NoPop
+}// end of StopSim
 
 // used to paint the grid shown on the frame
 @SuppressWarnings("serial")

@@ -13,29 +13,51 @@ public class ConwaysGame {
 	private static boolean runGame = false;
 	private static Integer[] randRows = new Integer[rows];
 	private static Integer[] randCols = new Integer[columns];
-	private static int populationSeedType = 0;
-	private static boolean makingPopChoice = true;
+	private static int populationSeedType = 0; // change this to be 0-3 to
+												// change population seed
+	private static boolean choice = false;
+	private static boolean gamePaused = true;
+	private static int userSelection = 0;
 
 	// change this to be a double between 0 and 1 to determine how many live
 	// the odds of a cell starting off as alive or dead - default is 0.05
-	public static double livingLikelihood = 0.99;
+	public static double livingLikelihood = 0.05;
 
 	public static void main(String[] args) throws InterruptedException {
 		setUpRNG();
-
-		// comment and uncomment each of the following to use
-		// different seeds:
-		// populate();
-		// populateSquare();
-		randSquarePop();
-		// doNotPop();
-
-		GridGui.drawUI(grid, rows, columns);
+		// draw the UI
+		GridGui.drawUI();
 		runGame();
 	}// end of main
 
 	public static void runGame() throws InterruptedException {
 		while (true) {
+			System.out.println("waiting for user to make a choice");
+			// wait for user to make a choice on how to populate the grid
+			while (!choice) {
+				Thread.sleep(200);
+			}
+			System.out.println("choice made");
+			/*
+			 * 0 == random live cells 1 == one 2x2 square of live cells in the
+			 * center of the grid 2 == random placement of 2x2 squares of live
+			 * cells 3 == grid of dead cells
+			 */
+			if (populationSeedType == 0)
+				populate();
+			else if (populationSeedType == 1)
+				populateSquare();
+			else if (populationSeedType == 2)
+				randSquarePop();
+			else if (populationSeedType == 3)
+				doNotPop();
+
+			choice = false;
+			userSelection = populationSeedType;
+			populationSeedType = -1;
+
+			// draw the grid itself
+			GridGui.drawGrid(grid, rows, columns);
 			// while runGame is false, it will put this thread to sleep
 			// so that it only starts once the user starts the game
 			while (!runGame) {
@@ -46,6 +68,27 @@ public class ConwaysGame {
 				// slows down the simulation speed
 				Thread.sleep(100);
 
+				// pauses the simulation when the user presses pause
+				while (gamePaused) {
+					// if user pauses the sim and then presses restart, we just
+					// restart the sim
+					if (!runGame) {
+						System.out.println("stopping");
+						/*
+						 * populationSeedType = userSelection; choice = true;
+						 */
+						break;
+					}
+					// if user pauses the sim and then makes a new choice, we
+					// stop the sim and refresh the grid
+					if (populationSeedType != -1) {
+						System.out.println("reseting - new selection made while paused");
+						runGame = false;
+						GridGui.updateGrid();
+						break;
+					}
+					Thread.sleep(200);
+				}
 				// iterates through the grid randomly (does not pick duplicate
 				// locations) rather than linearly
 				for (int i = 0; i < rows; i++) {
@@ -57,14 +100,6 @@ public class ConwaysGame {
 						}
 					}
 				}
-
-				// checks each space linearly; uncomment this code and comment
-				// out the above code to change how it runs
-				/*
-				 * for (int i = 0; i < rows; i++) { for (int j = 0; j < columns;
-				 * j++) { if (ruleCheck(i, j)) { grid[i][j].makeAlive(); } else
-				 * { grid[i][j].makeDead(); } } }
-				 */
 				GridGui.updateGrid();
 			}
 		}
@@ -229,9 +264,13 @@ public class ConwaysGame {
 		populationSeedType = val;
 	}// end of setPopType
 
-	public static void decisionMade(boolean choice) {
-		makingPopChoice = choice;
+	public static void decisionMade() {
+		choice = true;
 	}// end of setPopType
+
+	public static void pauseUnpause(boolean pauseStatus) {
+		gamePaused = pauseStatus;
+	}// end of pauseUnpause
 }// end of ConwaysGame
 
 // represents a cell, with vars for colour and whether it is alive or not
